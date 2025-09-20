@@ -1,0 +1,7 @@
+Review @PRODUCT_SPEC.md and create ARCHITECTURE.md
+  which will outline the high level architecture, data
+  model design and api design for a TypeScript backend
+  app that implements the said spec. Keep in mind that
+  this spec is not exhaustive. You are allowed to make
+  resonable assumptions but keep it simple and easy
+  without introducing significant features. 

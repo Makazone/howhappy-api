@@ -1,0 +1,70 @@
+import express, { type Express, type Request, type Response, type NextFunction } from 'express';
+import { logger } from '@shared/logging/logger.js';
+import type { Logger } from 'pino';
+
+declare global {
+  namespace Express {
+    interface Request {
+      id: string;
+      logger: Logger;
+    }
+  }
+}
+
+export interface ExpressBootstrapOptions {
+  trustProxy?: boolean;
+  bodyLimit?: string;
+}
+
+export function createExpressApp(options: ExpressBootstrapOptions = {}): Express {
+  const app = express();
+
+  if (options.trustProxy) {
+    app.set('trust proxy', true);
+  }
+
+  app.use(express.json({ limit: options.bodyLimit || '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: options.bodyLimit || '10mb' }));
+
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    req.id = crypto.randomUUID();
+    req.logger = logger.child({ requestId: req.id, path: req.path, method: req.method });
+    req.logger.info('Request started');
+    next();
+  });
+
+  app.get('/health', (_req: Request, res: Response) => {
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    });
+  });
+
+  app.get('/ready', async (req: Request, res: Response) => {
+    try {
+      const { prisma } = await import('@infrastructure/database/client.js');
+      await prisma.$queryRaw`SELECT 1`;
+      res.json({
+        status: 'ready',
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      req.logger.error({ error }, 'Readiness check failed');
+      res.status(503).json({
+        status: 'not ready',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+    req.logger.error({ error: err }, 'Unhandled error');
+    res.status(500).json({
+      error: 'Internal server error',
+      requestId: req.id,
+    });
+  });
+
+  return app;
+}
