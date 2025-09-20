@@ -10,8 +10,8 @@ Use this document to get up to speed before working in this repository.
 
 ## Current State
 
-- Repo focuses on an MVP for HowHappy (survey collection with audio transcription/analysis).
-- No source code scaffold exists yet; all tasks are tracked in `TODO.md`.
+- Phase 1 (Project Bootstrap) completed ✅ - Full infrastructure scaffolding in place
+- Phase 2 (Survey CRUD MVP) is next - Domain modules, auth, REST API endpoints
 - Tooling decisions: Node.js 22, `pnpm`, TypeScript, Express 5, Prisma 6, pg-boss, zod, pino, Vitest/Testcontainers.
 
 ## Expectations for Agents
@@ -28,6 +28,11 @@ Use this document to get up to speed before working in this repository.
 4. **Deployment Alignment**
    - Docker Compose must mirror Render deployment (API + worker + Postgres + MinIO).
    - Environment variables should match `.env.example` once created per the architecture doc.
+5. **Commit Format**
+   - Use conventional commit format: `type(scope): description`
+   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+   - Example: `feat(auth): implement JWT-based authentication`
+   - Always include Claude Code attribution in commit body
 
 ## Reporting Back
 
