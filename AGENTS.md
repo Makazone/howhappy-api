@@ -32,7 +32,7 @@ Use this document to get up to speed before working in this repository.
    - Use conventional commit format: `type(scope): description`
    - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
    - Example: `feat(auth): implement JWT-based authentication`
-   - Always include Claude Code attribution in commit body
+   - Always include Claude Code or Codex (depending on the agent) attribution in commit body
 
 ## Reporting Back
 
