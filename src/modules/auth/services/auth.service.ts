@@ -1,7 +1,12 @@
 import bcrypt from 'bcryptjs';
 import type { User } from '@prisma/client';
 import { userRepository, UserRepository } from '../repositories/user.repository.js';
-import { loginInputSchema, registerInputSchema, type LoginInput, type RegisterInput } from '../schema.js';
+import {
+  loginInputSchema,
+  registerInputSchema,
+  type LoginInput,
+  type RegisterInput,
+} from '../schema.js';
 import { AppError, ConflictError, UnauthorizedError } from '@shared/errors/app-error.js';
 import { signUserAccessToken } from '@shared/security/jwt.js';
 

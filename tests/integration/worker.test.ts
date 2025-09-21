@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createBoss, stopBoss } from '../../src/app/bootstrap/boss.js';
-import { connectDatabase, disconnectDatabase, prisma } from '../../src/infrastructure/database/client.js';
+import {
+  connectDatabase,
+  disconnectDatabase,
+  prisma,
+} from '../../src/infrastructure/database/client.js';
 import {
   startTestContainers,
   stopTestContainers,
@@ -26,7 +30,10 @@ describe('Worker Integration Tests', () => {
     await connectDatabase();
 
     const currentDir = dirname(fileURLToPath(import.meta.url));
-    const migrationPath = resolve(currentDir, '../../prisma/migrations/20250920095931_bootstrap/migration.sql');
+    const migrationPath = resolve(
+      currentDir,
+      '../../prisma/migrations/20250920095931_bootstrap/migration.sql',
+    );
     const migrationSql = readFileSync(migrationPath, 'utf-8');
     await prisma.$executeRawUnsafe(migrationSql);
 

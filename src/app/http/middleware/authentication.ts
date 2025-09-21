@@ -1,6 +1,11 @@
 import type { RequestHandler } from 'express';
 import { UnauthorizedError } from '@shared/errors/app-error.js';
-import { verifyToken, isUserToken, isResponseToken, type ResponseTokenPayload } from '@shared/security/jwt.js';
+import {
+  verifyToken,
+  isUserToken,
+  isResponseToken,
+  type ResponseTokenPayload,
+} from '@shared/security/jwt.js';
 
 export interface AuthenticatedUser {
   id: string;

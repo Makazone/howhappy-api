@@ -2,11 +2,19 @@ import { getQueueProducer } from '@infrastructure/queue/producer.js';
 import { getMinIOClient } from '@infrastructure/storage/minio-client.js';
 import { AppError, ForbiddenError, NotFoundError } from '@shared/errors/app-error.js';
 import { signResponseToken, type ResponseTokenPayload } from '@shared/security/jwt.js';
-import type { Prisma } from '@prisma/client';
-import { responseRepository, ResponseRepository } from '../repositories/response.repository.js';
-import { surveyRepository, SurveyRepository } from '@modules/survey/repositories/survey.repository.js';
-import { completeResponseSchema, prepareResponseSchema, type CompleteResponseInput, type PrepareResponseInput } from '../schema.js';
+import type { Prisma, SurveyResponse } from '@prisma/client';
 import { UploadState } from '@prisma/client';
+import { responseRepository, ResponseRepository } from '../repositories/response.repository.js';
+import {
+  surveyRepository,
+  SurveyRepository,
+} from '@modules/survey/repositories/survey.repository.js';
+import {
+  completeResponseSchema,
+  prepareResponseSchema,
+  type CompleteResponseInput,
+  type PrepareResponseInput,
+} from '../schema.js';
 
 export interface PrepareOptions {
   surveyId: string;
@@ -27,7 +35,10 @@ export class ResponseService {
   private readonly surveys: SurveyRepository;
   private bucketEnsured = false;
 
-  constructor({ responses = responseRepository, surveys = surveyRepository }: { responses?: ResponseRepository; surveys?: SurveyRepository } = {}) {
+  constructor({
+    responses = responseRepository,
+    surveys = surveyRepository,
+  }: { responses?: ResponseRepository; surveys?: SurveyRepository } = {}) {
     this.responses = responses;
     this.surveys = surveys;
   }
@@ -45,7 +56,11 @@ export class ResponseService {
     return `surveys/${surveyId}/responses/${responseId}/audio.webm`;
   }
 
-  async prepare(options: PrepareOptions) {
+  async prepare(options: PrepareOptions): Promise<{
+    response: SurveyResponse;
+    uploadUrl: string;
+    responseToken: string;
+  }> {
     const payload = prepareResponseSchema.parse(options.payload ?? {});
 
     const survey = await this.surveys.findById(options.surveyId);
@@ -78,7 +93,7 @@ export class ResponseService {
     };
   }
 
-  async complete(options: CompleteOptions) {
+  async complete(options: CompleteOptions): Promise<SurveyResponse> {
     const payload = completeResponseSchema.parse(options.payload);
     const response = await this.responses.findById(options.responseId);
     if (!response || response.surveyId !== options.surveyId) {
@@ -89,7 +104,10 @@ export class ResponseService {
       return response;
     }
 
-    if (options.token.responseId !== options.responseId || options.token.surveyId !== options.surveyId) {
+    if (
+      options.token.responseId !== options.responseId ||
+      options.token.surveyId !== options.surveyId
+    ) {
       throw new ForbiddenError('Response token mismatch');
     }
 
@@ -108,7 +126,7 @@ export class ResponseService {
         responseId: updated.id,
         surveyId: updated.surveyId,
       });
-    } catch (error) {
+    } catch {
       throw new AppError('Failed to enqueue transcription job', 500);
     }
 

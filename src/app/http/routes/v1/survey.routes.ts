@@ -1,8 +1,17 @@
 import { Router } from 'express';
-import { listSurveys, getSurvey, createSurvey, updateSurvey } from '../../controllers/survey.controller.js';
+import {
+  listSurveys,
+  getSurvey,
+  createSurvey,
+  updateSurvey,
+} from '../../controllers/survey.controller.js';
 import { validateBody, validateQuery } from '../../middleware/validation.js';
 import { requireUser } from '../../middleware/authentication.js';
-import { createSurveySchema, listSurveyQuerySchema, updateSurveySchema } from '@modules/survey/schema.js';
+import {
+  createSurveySchema,
+  listSurveyQuerySchema,
+  updateSurveySchema,
+} from '@modules/survey/schema.js';
 
 const router: Router = Router();
 

@@ -46,6 +46,18 @@ pnpm worker
 
 Both processes expect Postgres and MinIO to be running. A Docker Compose file will follow in a future update; for now use local services or Testcontainers during tests.
 
+### API Documentation
+
+- Interactive Swagger UI is available once the server is running at `http://localhost:3000/docs`.
+- The raw OpenAPI document is served from `http://localhost:3000/openapi.json`.
+- To generate an updated static spec (written to `docs/openapi.json`) without starting the server, run:
+
+  ```bash
+  pnpm docs:openapi
+  ```
+
+> ℹ️ A Git pre-commit hook (configured via `simple-git-hooks`) automatically runs `pnpm run typecheck`, `pnpm run format`, `pnpm run lint`, and `pnpm run docs:openapi`. Run `pnpm install` after cloning to enable the hook locally.
+
 ## Testing
 
 Run all tests (unit + integration):
@@ -74,29 +86,29 @@ All application routes are namespaced under `/v1`.
 
 ### Auth
 
-| Method | Path            | Description            |
-| ------ | --------------- | ---------------------- |
-| POST   | `/v1/auth/register` | Create an account (returns JWT)|
-| POST   | `/v1/auth/login`    | Authenticate (returns JWT)    |
-| GET    | `/v1/auth/me`       | Current user profile          |
+| Method | Path                | Description                     |
+| ------ | ------------------- | ------------------------------- |
+| POST   | `/v1/auth/register` | Create an account (returns JWT) |
+| POST   | `/v1/auth/login`    | Authenticate (returns JWT)      |
+| GET    | `/v1/auth/me`       | Current user profile            |
 
 ### Surveys
 
 Authenticated requests must include `Authorization: Bearer <user-token>`.
 
-| Method | Path               | Description                |
-| ------ | ------------------ | -------------------------- |
-| GET    | `/v1/surveys`      | List surveys for owner     |
-| POST   | `/v1/surveys`      | Create survey (DRAFT)      |
-| GET    | `/v1/surveys/:id`  | Get specific survey        |
-| PATCH  | `/v1/surveys/:id`  | Update title/prompt/status |
+| Method | Path              | Description                |
+| ------ | ----------------- | -------------------------- |
+| GET    | `/v1/surveys`     | List surveys for owner     |
+| POST   | `/v1/surveys`     | Create survey (DRAFT)      |
+| GET    | `/v1/surveys/:id` | Get specific survey        |
+| PATCH  | `/v1/surveys/:id` | Update title/prompt/status |
 
 ### Responses
 
-| Method | Path                                   | Description |
-| ------ | -------------------------------------- | ----------- |
-| POST   | `/v1/surveys/:id/responses`            | Prepare a response; returns presigned upload URL + response token |
-| PATCH  | `/v1/surveys/:surveyId/responses/:responseId` | Complete upload (requires response token in `Authorization`) |
+| Method | Path                                          | Description                                                       |
+| ------ | --------------------------------------------- | ----------------------------------------------------------------- |
+| POST   | `/v1/surveys/:id/responses`                   | Prepare a response; returns presigned upload URL + response token |
+| PATCH  | `/v1/surveys/:surveyId/responses/:responseId` | Complete upload (requires response token in `Authorization`)      |
 
 Completing a response enqueues a `transcription.request` job on pg-boss.
 

@@ -14,6 +14,8 @@ Use this document to get up to speed before working in this repository.
 - Prisma schema matches the architecture doc (User/Survey/SurveyResponse with upload + analysis statuses) and migrations live in `prisma/migrations/20250920095931_bootstrap`.
 - Queue producer starts with the web server (`initQueueProducer` in `server.ts`); worker subscribes to `transcription.request` and `analysis.request` stubs.
 - Integration tests spin up Postgres + MinIO containers, apply the bootstrap migration, and verify auth/survey/response flows plus pg-boss job emission.
+- Swagger UI is available at `/docs`; the OpenAPI document lives at `/openapi.json` and can be regenerated via `pnpm run docs:openapi`.
+- Pre-commit hook is managed via `simple-git-hooks`; `pnpm install` wires it up to run typecheck → formatter → lint → docs generation (`pnpm run precommit`).
 
 ## Expectations for Agents
 
@@ -26,6 +28,7 @@ Use this document to get up to speed before working in this repository.
 3. **Testing & Quality**
    - Extend unit tests under `tests/unit/**` and integration tests under `tests/integration/**` when adding behaviour.
    - Use Testcontainers helpers (`tests/helpers/containers.ts`) for DB/MinIO when validating flows end-to-end.
+   - Keep the OpenAPI spec current (regenerate if schemas or routes change and commit `docs/openapi.json` when applicable).
 4. **Deployment Alignment**
    - Docker Compose (to be added) must mirror Render deployment (API + worker + Postgres + MinIO).
    - Environment variables should match `.env.example` (`MINIO_ENDPOINT` expects full URL, `MINIO_USE_SSL` is boolean).

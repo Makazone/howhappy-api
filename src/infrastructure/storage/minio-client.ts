@@ -26,7 +26,10 @@ function resolveEndpoint(rawEndpoint: string, useSsl: boolean): string {
     // Ensure trailing slash removed for aws sdk compatibility
     return url.toString().replace(/\/$/, '');
   } catch (error) {
-    storageLogger.warn({ rawEndpoint, error }, 'Failed to parse MINIO_ENDPOINT, falling back to default http scheme');
+    storageLogger.warn(
+      { rawEndpoint, error },
+      'Failed to parse MINIO_ENDPOINT, falling back to default http scheme',
+    );
     const prefix = useSsl ? 'https://' : 'http://';
     return `${prefix}${rawEndpoint.replace(/^https?:\/\//, '')}`;
   }

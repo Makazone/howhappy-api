@@ -12,7 +12,11 @@ import {
   stopTestContainers,
   type TestContainers,
 } from '../helpers/containers.js';
-import { getQueueProducer, initQueueProducer, shutdownQueueProducer } from '../../src/infrastructure/queue/producer.js';
+import {
+  getQueueProducer,
+  initQueueProducer,
+  shutdownQueueProducer,
+} from '../../src/infrastructure/queue/producer.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -33,7 +37,10 @@ describe('Application Integration Tests', () => {
 
     // Apply bootstrap migration
     const currentDir = dirname(fileURLToPath(import.meta.url));
-    const migrationPath = resolve(currentDir, '../../prisma/migrations/20250920095931_bootstrap/migration.sql');
+    const migrationPath = resolve(
+      currentDir,
+      '../../prisma/migrations/20250920095931_bootstrap/migration.sql',
+    );
     const migrationSql = readFileSync(migrationPath, 'utf-8');
     await prisma.$executeRawUnsafe(migrationSql);
 
@@ -93,13 +100,11 @@ describe('Application Integration Tests', () => {
     let surveyId: string;
 
     it('registers a user', async () => {
-      const response = await request(app)
-        .post('/v1/auth/register')
-        .send({
-          email: 'owner@example.com',
-          password: 'Password123!',
-          displayName: 'Owner',
-        });
+      const response = await request(app).post('/v1/auth/register').send({
+        email: 'owner@example.com',
+        password: 'Password123!',
+        displayName: 'Owner',
+      });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('token');

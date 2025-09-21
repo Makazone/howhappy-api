@@ -1,9 +1,11 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { logger } from '@shared/logging/logger.js';
 import type { Logger } from 'pino';
 import routes from '@app/http/routes/index.js';
 import { AppError } from '@shared/errors/app-error.js';
 import crypto from 'node:crypto';
+import openApiDocument from '@docs/openapi.js';
 
 declare global {
   namespace Express {
@@ -28,6 +30,11 @@ export function createExpressApp(options: ExpressBootstrapOptions = {}): Express
 
   app.use(express.json({ limit: options.bodyLimit || '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: options.bodyLimit || '10mb' }));
+
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
+  app.get('/openapi.json', (_req: Request, res: Response) => {
+    res.json(openApiDocument);
+  });
 
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.id = crypto.randomUUID();

@@ -16,7 +16,10 @@ export class ResponseRepository {
     });
   }
 
-  async update(responseId: string, data: Prisma.SurveyResponseUpdateInput): Promise<SurveyResponse> {
+  async update(
+    responseId: string,
+    data: Prisma.SurveyResponseUpdateInput,
+  ): Promise<SurveyResponse> {
     return prisma.surveyResponse.update({
       where: { id: responseId },
       data,

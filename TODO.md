@@ -68,8 +68,15 @@
   - [x] Provide `.env.example` matching architecture doc (Postgres, MinIO, auth secrets).
   - [x] Document testing workflow (unit vs integration) and how to run worker locally.
 
-## Optional Stretch (Post-MVP)
+## Phase 3 – Improving API response schema ✅
 
+- [x] Move OpenAPI response schemas into module-owned DTOs:
+  - [x] Auth responses (`POST /v1/auth/register`, `POST /v1/auth/login`, `GET /v1/auth/me`).
+  - [x] Survey endpoints (`GET|POST|GET:id|PATCH /v1/surveys`).
+  - [x] Response endpoints (`POST /v1/surveys/:id/responses`, `PATCH /v1/surveys/:surveyId/responses/:responseId`).
+
+## Future Phases
+
+- [ ] Add OpenAPI spec generation for survey endpoints.
 - [ ] Replace stubbed MinIO/AI clients with real implementations tied to Render secrets.
 - [ ] Implement transcription + analysis job processors with external API calls and pg-boss retries.
-- [ ] Add OpenAPI spec generation for survey endpoints.

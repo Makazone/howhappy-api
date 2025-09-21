@@ -54,7 +54,7 @@ export function verifyToken<T extends AnyTokenPayload = AnyTokenPayload>(token: 
   try {
     const decoded = jwt.verify(token, getSecret());
     return decoded as T;
-  } catch (error) {
+  } catch {
     throw new UnauthorizedError('Invalid token');
   }
 }
