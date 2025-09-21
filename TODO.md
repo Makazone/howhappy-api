@@ -30,42 +30,43 @@
   - [x] Add worker integration smoke test enqueueing a dummy job and ensuring handler is invoked (temporary stub handler).
   - [x] Wire `pnpm test` to run both unit and integration suites locally.
 
-## Phase 2 – Survey CRUD MVP
+## Phase 2 – Survey CRUD MVP ✅
 
-- [ ] **Domain & repositories**
-  - [ ] Implement `modules/survey/repository.ts` with Prisma queries (list, get, create, update).
-  - [ ] Implement `modules/survey/service.ts` encapsulating business rules (status transitions, input validation hooks).
-  - [ ] Implement `modules/survey/schema.ts` and DTOs for create/update/list operations.
+- [x] **Domain & repositories**
+  - [x] Implement `modules/survey/repository.ts` with Prisma queries (list, get, create, update).
+  - [x] Implement `modules/survey/service.ts` encapsulating business rules (status transitions, input validation hooks).
+  - [x] Implement `modules/survey/schema.ts` and DTOs for create/update/list operations.
 
-- [ ] **Auth groundwork**
-  - [ ] Implement `modules/auth/service.ts` with register/login/token issuance backed by Prisma `User` repository.
-  - [ ] Implement `app/http/middleware/authentication.ts` verifying JWT + injecting user into request context.
-  - [ ] Add `/auth/register`, `/auth/login`, `/me` endpoints using controllers and DTOs.
+- [x] **Auth groundwork**
+  - [x] Implement `modules/auth/service.ts` with register/login/token issuance backed by Prisma `User` repository.
+  - [x] Implement `app/http/middleware/authentication.ts` verifying JWT + injecting user into request context.
+  - [x] Add `/auth/register`, `/auth/login`, `/me` endpoints using controllers and DTOs.
 
-- [ ] **Survey HTTP API**
-  - [ ] Add controllers (`app/http/controllers/survey.controller.ts`) with REST endpoints for `GET /surveys`, `POST /surveys`, `GET /surveys/:id`, `PATCH /surveys/:id`.
-  - [ ] Add routes under `app/http/routes/v1/survey.routes.ts` and register in router index.
-  - [ ] Implement validation middleware using zod schemas for requests/responses.
-  - [ ] Ensure controllers call survey service only; no direct Prisma usage.
+- [x] **Survey HTTP API**
+  - [x] Add controllers (`app/http/controllers/survey.controller.ts`) with REST endpoints for `GET /surveys`, `POST /surveys`, `GET /surveys/:id`, `PATCH /surveys/:id`.
+  - [x] Add routes under `app/http/routes/v1/survey.routes.ts` and register in router index.
+  - [x] Implement validation middleware using zod schemas for requests/responses.
+  - [x] Ensure controllers call survey service only; no direct Prisma usage.
 
-- [ ] **Response scaffolding (minimal)**
-  - [ ] Add `modules/response` placeholders with repository/service supporting response creation + upload state updates (even if job handlers stubbed).
-  - [ ] Expose `POST /surveys/:id/responses` and `PATCH /surveys/:id/responses/:responseId` with stubbed handler returning mocked uploadUrl/responseToken.
+- [x] **Response scaffolding (minimal)**
+  - [x] Add `modules/response` placeholders with repository/service supporting response creation + upload state updates (even if job handlers stubbed).
+  - [x] Expose `POST /surveys/:id/responses` and `PATCH /surveys/:id/responses/:responseId` with stubbed handler returning mocked uploadUrl/responseToken.
 
-- [ ] **Queue integration (stub)**
-  - [ ] Register `transcription.request` and `analysis.request` queues with no-op handlers returning success (ready for future implementation).
+- [x] **Queue integration (stub)**
+  - [x] Register `transcription.request` and `analysis.request` queues with no-op handlers returning success (ready for future implementation).
+  - [x] Ensure API enqueues transcription job when a response is completed.
 
-- [ ] **Testing**
-  - [ ] Add unit tests for survey service covering create/update validation.
-  - [ ] Add API integration tests for survey CRUD endpoints (including auth guard behavior).
-  - [ ] Add worker test ensuring response creation enqueues transcription job.
+- [x] **Testing**
+  - [x] Add unit tests for survey service covering create/update validation.
+  - [x] Add API integration tests for survey CRUD endpoints (including auth guard behavior).
+  - [x] Add worker test ensuring response creation enqueues transcription job.
 
-- [ ] **Documentation & developer experience**
-  - [ ] Update `README.md` with setup instructions (`pnpm install`, `pnpm dev`, Docker compose).
-  - [ ] Update `TODO.md` with completed tasks along the way.
-  - [ ] Update `AGENTS.md` with relevant findings and ideas.
-  - [ ] Provide `.env.example` matching architecture doc (Postgres, MinIO, auth secrets).
-  - [ ] Document testing workflow (unit vs integration) and how to run worker locally.
+- [x] **Documentation & developer experience**
+  - [x] Update `README.md` with setup instructions (`pnpm install`, `pnpm dev`, Docker compose note) and new API surface.
+  - [x] Update `TODO.md` with completed tasks along the way.
+  - [x] Update `AGENTS.md` with relevant findings and ideas.
+  - [x] Provide `.env.example` matching architecture doc (Postgres, MinIO, auth secrets).
+  - [x] Document testing workflow (unit vs integration) and how to run worker locally.
 
 ## Optional Stretch (Post-MVP)
 

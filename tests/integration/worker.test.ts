@@ -1,12 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createBoss, stopBoss } from '../../src/app/bootstrap/boss';
-import { connectDatabase, disconnectDatabase } from '../../src/infrastructure/database/client';
+import { createBoss, stopBoss } from '../../src/app/bootstrap/boss.js';
+import { connectDatabase, disconnectDatabase, prisma } from '../../src/infrastructure/database/client.js';
 import {
   startTestContainers,
   stopTestContainers,
   type TestContainers,
-} from '../helpers/containers';
+} from '../helpers/containers.js';
 import type PgBoss from 'pg-boss';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 describe('Worker Integration Tests', () => {
   let boss: PgBoss;
@@ -21,6 +24,11 @@ describe('Worker Integration Tests', () => {
 
     // Connect to database
     await connectDatabase();
+
+    const currentDir = dirname(fileURLToPath(import.meta.url));
+    const migrationPath = resolve(currentDir, '../../prisma/migrations/20250920095931_bootstrap/migration.sql');
+    const migrationSql = readFileSync(migrationPath, 'utf-8');
+    await prisma.$executeRawUnsafe(migrationSql);
 
     // Create pg-boss instance
     boss = await createBoss();

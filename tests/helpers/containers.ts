@@ -1,5 +1,5 @@
 import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainers';
-import { logger } from '../../src/shared/logging/logger';
+import { logger } from '../../src/shared/logging/logger.js';
 
 const testLogger = logger.child({ module: 'test-containers' });
 
@@ -46,8 +46,7 @@ export async function startTestContainers(): Promise<TestContainers> {
   const minioHost = minio.getHost();
 
   // Update MinIO environment variables for the tests
-  process.env.MINIO_ENDPOINT = minioHost;
-  process.env.MINIO_PORT = minioPort.toString();
+  process.env.MINIO_ENDPOINT = `http://${minioHost}:${minioPort}`;
   process.env.MINIO_ACCESS_KEY = 'minioadmin';
   process.env.MINIO_SECRET_KEY = 'minioadmin';
   process.env.MINIO_USE_SSL = 'false';

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { buildApp } from '../../src/app';
+import { buildApp } from '../../src/app.js';
 
 describe('Health Check Integration', () => {
   const app = buildApp();

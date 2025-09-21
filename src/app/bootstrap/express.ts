@@ -1,6 +1,9 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import { logger } from '@shared/logging/logger.js';
 import type { Logger } from 'pino';
+import routes from '@app/http/routes/index.js';
+import { AppError } from '@shared/errors/app-error.js';
+import crypto from 'node:crypto';
 
 declare global {
   namespace Express {
@@ -58,8 +61,27 @@ export function createExpressApp(options: ExpressBootstrapOptions = {}): Express
     }
   });
 
+  app.use(routes);
+
+  app.use((req: Request, res: Response) => {
+    res.status(404).json({
+      error: 'Not Found',
+      requestId: req.id,
+    });
+  });
+
   app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
     req.logger.error({ error: err }, 'Unhandled error');
+
+    if (err instanceof AppError) {
+      res.status(err.statusCode).json({
+        error: err.message,
+        code: err.code,
+        requestId: req.id,
+      });
+      return;
+    }
+
     res.status(500).json({
       error: 'Internal server error',
       requestId: req.id,

@@ -14,6 +14,24 @@ import { logger } from '@shared/logging/logger.js';
 
 const storageLogger = logger.child({ module: 'storage' });
 
+function resolveEndpoint(rawEndpoint: string, useSsl: boolean): string {
+  try {
+    const normalized = rawEndpoint.includes('://') ? rawEndpoint : `http://${rawEndpoint}`;
+    const url = new URL(normalized);
+
+    if (useSsl) {
+      url.protocol = 'https:';
+    }
+
+    // Ensure trailing slash removed for aws sdk compatibility
+    return url.toString().replace(/\/$/, '');
+  } catch (error) {
+    storageLogger.warn({ rawEndpoint, error }, 'Failed to parse MINIO_ENDPOINT, falling back to default http scheme');
+    const prefix = useSsl ? 'https://' : 'http://';
+    return `${prefix}${rawEndpoint.replace(/^https?:\/\//, '')}`;
+  }
+}
+
 export class MinIOClient {
   private client: S3Client;
   private bucketName: string;
@@ -21,8 +39,10 @@ export class MinIOClient {
   constructor() {
     const env = getEnv();
 
+    const endpoint = resolveEndpoint(env.MINIO_ENDPOINT, env.MINIO_USE_SSL);
+
     const config: S3ClientConfig = {
-      endpoint: `http${env.MINIO_USE_SSL ? 's' : ''}://${env.MINIO_ENDPOINT}:${env.MINIO_PORT}`,
+      endpoint,
       region: 'us-east-1', // MinIO requires a region even though it's not used
       credentials: {
         accessKeyId: env.MINIO_ACCESS_KEY,

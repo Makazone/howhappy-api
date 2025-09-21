@@ -8,12 +8,8 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
 
   // MinIO Configuration
-  MINIO_ENDPOINT: z.string().default('localhost'),
-  MINIO_PORT: z.string().regex(/^\d+$/).default('9000'),
-  MINIO_USE_SSL: z
-    .string()
-    .transform((val) => val === 'true')
-    .default('false'),
+  MINIO_ENDPOINT: z.string().default('http://localhost:9000'),
+  MINIO_USE_SSL: z.coerce.boolean().default(false),
   MINIO_ACCESS_KEY: z.string().min(1),
   MINIO_SECRET_KEY: z.string().min(8),
   MINIO_BUCKET_NAME: z.string().default('howhappy'),
@@ -58,6 +54,10 @@ export function getEnv(): Env {
     return loadEnv();
   }
   return cachedEnv;
+}
+
+export function resetEnvCache(): void {
+  cachedEnv = null;
 }
 
 export type { Env };
