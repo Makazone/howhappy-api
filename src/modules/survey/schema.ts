@@ -29,6 +29,11 @@ export const surveySchema = z.object({
   title: z.string(),
   prompt: z.string(),
   status: surveyStatusEnum,
+  visits: z.number().int(),
+  submits: z.number().int(),
+  completionRate: z.number().min(0).max(1),
+  lastActivityAt: z.string().datetime().optional(),
+  insightSummary: z.string().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

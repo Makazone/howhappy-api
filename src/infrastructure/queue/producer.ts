@@ -12,9 +12,13 @@ export async function initQueueProducer(config: BossConfig = {}): Promise<PgBoss
     initializing = createBoss({
       ...config,
       max: config.max ?? 5,
-    }).then((boss) => {
+    }).then(async (boss) => {
+      await boss.createQueue('transcription.request');
+      await boss.createQueue('analysis.request');
+
       producerInstance = boss;
       initializing = null;
+
       return boss;
     });
   }

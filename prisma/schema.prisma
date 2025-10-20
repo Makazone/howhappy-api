@@ -45,13 +45,16 @@ model User {
 }
 
 model Survey {
-  id        String       @id @default(uuid())
-  ownerId   String
-  title     String
-  prompt    String       @db.Text
-  status    SurveyStatus @default(DRAFT)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id             String       @id @default(uuid())
+  ownerId        String
+  title          String
+  prompt         String       @db.Text
+  status         SurveyStatus @default(DRAFT)
+  visits         Int          @default(0)
+  submits        Int          @default(0)
+  insightSummary String?      @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   owner     User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   responses SurveyResponse[]
@@ -71,6 +74,11 @@ model SurveyResponse {
   transcriptionStatus JobStatus   @default(PENDING)
   analysis            Json?
   analysisStatus      JobStatus   @default(PENDING)
+  duration            Int?
+  confidence          Float?
+  language            String?
+  segments            Json?
+  metadata            Json?
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
 

@@ -305,6 +305,24 @@
                     "CLOSED"
                   ]
                 },
+                "visits": {
+                  "type": "integer"
+                },
+                "submits": {
+                  "type": "integer"
+                },
+                "completionRate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "lastActivityAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "insightSummary": {
+                  "type": "string"
+                },
                 "createdAt": {
                   "type": "string",
                   "format": "date-time"
@@ -320,6 +338,9 @@
                 "title",
                 "prompt",
                 "status",
+                "visits",
+                "submits",
+                "completionRate",
                 "createdAt",
                 "updatedAt"
               ]
@@ -367,6 +388,24 @@
                   "CLOSED"
                 ]
               },
+              "visits": {
+                "type": "integer"
+              },
+              "submits": {
+                "type": "integer"
+              },
+              "completionRate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "lastActivityAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "insightSummary": {
+                "type": "string"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
@@ -382,6 +421,9 @@
               "title",
               "prompt",
               "status",
+              "visits",
+              "submits",
+              "completionRate",
               "createdAt",
               "updatedAt"
             ]
@@ -420,6 +462,24 @@
                   "CLOSED"
                 ]
               },
+              "visits": {
+                "type": "integer"
+              },
+              "submits": {
+                "type": "integer"
+              },
+              "completionRate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "lastActivityAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "insightSummary": {
+                "type": "string"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
@@ -435,6 +495,9 @@
               "title",
               "prompt",
               "status",
+              "visits",
+              "submits",
+              "completionRate",
               "createdAt",
               "updatedAt"
             ]
@@ -473,6 +536,24 @@
                   "CLOSED"
                 ]
               },
+              "visits": {
+                "type": "integer"
+              },
+              "submits": {
+                "type": "integer"
+              },
+              "completionRate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "lastActivityAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "insightSummary": {
+                "type": "string"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
@@ -488,6 +569,9 @@
               "title",
               "prompt",
               "status",
+              "visits",
+              "submits",
+              "completionRate",
               "createdAt",
               "updatedAt"
             ]
@@ -595,6 +679,43 @@
                   "COMPLETED",
                   "FAILED"
                 ]
+              },
+              "duration": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "language": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "segments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {}
               },
               "createdAt": {
                 "type": "string",
@@ -705,6 +826,43 @@
                   "FAILED"
                 ]
               },
+              "duration": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "language": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "segments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {}
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time"
@@ -729,6 +887,441 @@
           "response"
         ],
         "title": "ResponseCompletion"
+      },
+      "ResponseList": {
+        "type": "object",
+        "properties": {
+          "responses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "surveyId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "registeredUserId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "anonymousEmail": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "email"
+                },
+                "audioUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "uploadState": {
+                  "type": "string",
+                  "enum": [
+                    "PREPARED",
+                    "UPLOADING",
+                    "COMPLETED",
+                    "FAILED"
+                  ]
+                },
+                "transcription": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "transcriptionStatus": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "PROCESSING",
+                    "COMPLETED",
+                    "FAILED"
+                  ]
+                },
+                "analysis": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": {}
+                },
+                "analysisStatus": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "PROCESSING",
+                    "COMPLETED",
+                    "FAILED"
+                  ]
+                },
+                "duration": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "confidence": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "language": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "segments": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "metadata": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": {}
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "surveyId",
+                "uploadState",
+                "transcriptionStatus",
+                "analysisStatus",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "responses"
+        ],
+        "title": "ResponseList"
+      },
+      "SingleResponse": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "surveyId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "registeredUserId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "anonymousEmail": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email"
+              },
+              "audioUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "uploadState": {
+                "type": "string",
+                "enum": [
+                  "PREPARED",
+                  "UPLOADING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "transcription": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "transcriptionStatus": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "PROCESSING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "analysis": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {}
+              },
+              "analysisStatus": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "PROCESSING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "duration": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "language": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "segments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {}
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "surveyId",
+              "uploadState",
+              "transcriptionStatus",
+              "analysisStatus",
+              "createdAt",
+              "updatedAt"
+            ]
+          }
+        },
+        "required": [
+          "response"
+        ],
+        "title": "SingleResponse"
+      },
+      "SubmitResponseRequest": {
+        "type": "object",
+        "properties": {
+          "responseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "audioUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "responseId",
+          "audioUrl"
+        ],
+        "title": "SubmitResponseRequest"
+      },
+      "SubmitResponseResult": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "surveyId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "registeredUserId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "anonymousEmail": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email"
+              },
+              "audioUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri"
+              },
+              "uploadState": {
+                "type": "string",
+                "enum": [
+                  "PREPARED",
+                  "UPLOADING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "transcription": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "transcriptionStatus": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "PROCESSING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "analysis": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {}
+              },
+              "analysisStatus": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "PROCESSING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "duration": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              },
+              "language": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "segments": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {}
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "surveyId",
+              "uploadState",
+              "transcriptionStatus",
+              "analysisStatus",
+              "createdAt",
+              "updatedAt"
+            ]
+          },
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "response"
+        ],
+        "title": "SubmitResponseResult"
       }
     },
     "parameters": {}
@@ -1192,6 +1785,188 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResponseCompletion"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Responses"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "surveyId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "responseId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys/{surveyId}/responses": {
+      "get": {
+        "tags": [
+          "Responses"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "surveyId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of responses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Survey not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/surveys/{surveyId}/responses/submit": {
+      "post": {
+        "tags": [
+          "Responses"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "surveyId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitResponseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitResponseResult"
                 }
               }
             }

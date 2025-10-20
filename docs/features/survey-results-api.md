@@ -16,12 +16,9 @@ model Survey {
   // ... existing fields ...
   visits         Int      @default(0)
   submits        Int      @default(0)
-  completionRate Float    @default(0.0)
-  lastActivityAt DateTime?
 
   // Insights fields
   insightSummary String?  @db.Text
-  actionHints    Json?    // Array of action hint objects
 
   // ... rest of existing model
 }
@@ -30,7 +27,6 @@ model Survey {
 model SurveyResponse {
   // ... existing fields ...
   duration        Int?     // duration in seconds
-  confidence      Float?   // transcription confidence
   language        String?  // detected language
   segments        Json?    // transcript segments
   metadata        Json?    // request metadata (IP, user agent, etc.)
@@ -46,13 +42,12 @@ Based on the current OpenAPI specification, the following endpoints need to be a
 ### Modified Endpoints
 
 - **GET /v1/surveys/{id}**: Enhanced to include metrics, response counts, and insights
-- **GET /v1/surveys/{surveyId}/responses**: New endpoint for listing responses with cursor pagination
+- **GET /v1/surveys/{surveyId}/responses**: New endpoint for listing responses (no pagination for now)
 
 ### New Endpoints
 
 - **GET /v1/surveys/{surveyId}/responses/{responseId}**: Get detailed response information
 - **POST /v1/surveys/{surveyId}/responses/submit**: Create response with audio URL and enqueue transcription
-- **POST /v1/surveys/{surveyId}/responses/{responseId}/transcript**: Manual transcription retry (optional)
 
 ### New Request/Response Schemas
 
@@ -84,18 +79,6 @@ Returns survey details including key performance indicators, response counts, an
     "completionRate": 0.71,
     "lastActivityAt": "2024-08-29T15:29:00Z",
     "insightSummary": "Our analysis of 12 responses reveals valuable insights about user satisfaction and areas for improvement. The feedback shows strong appreciation for the current functionality while highlighting opportunities for enhanced features and streamlined processes.",
-    "actionHints": [
-      {
-        "priority": "high",
-        "action": "Improve onboarding flow with guided tutorials",
-        "impact": "Address 30% of negative feedback"
-      },
-      {
-        "priority": "medium",
-        "action": "Add more customization options to dashboard",
-        "impact": "Requested by 25% of respondents"
-      }
-    ],
     "createdAt": "2024-01-15T10:00:00Z",
     "updatedAt": "2024-08-29T15:29:00Z"
   }
@@ -106,12 +89,7 @@ Returns survey details including key performance indicators, response counts, an
 
 #### GET /v1/surveys/{surveyId}/responses
 
-Retrieve all responses for a survey with cursor-based pagination.
-
-**Query Parameters:**
-
-- `cursor` (string, uuid): Cursor for pagination (optional)
-- `limit` (integer): Number of responses per page (1-100, default: 20)
+Retrieve all responses for a survey.
 
 **Response:**
 
@@ -135,8 +113,7 @@ Retrieve all responses for a survey with cursor-based pagination.
       "createdAt": "2024-08-29T15:29:00Z",
       "updatedAt": "2024-08-29T15:30:00Z"
     }
-  ],
-  "nextCursor": null
+  ]
 }
 ```
 
@@ -166,13 +143,6 @@ Get detailed information about a specific response.
     "duration": 112,
     "confidence": 0.95,
     "language": "en",
-    "segments": [
-      {
-        "start": 0.0,
-        "end": 5.2,
-        "text": "Looking at our current workflow, there are three main phases"
-      }
-    ],
     "metadata": {
       "userAgent": "Mozilla/5.0...",
       "ipAddress": "192.168.1.1",
@@ -196,11 +166,7 @@ Frontend calls this to get a response token and signed upload URL.
 
 **Request:**
 
-```json
-{
-  "anonymousEmail": "user@example.com" // optional
-}
-```
+No request body is required.
 
 **Response:**
 
@@ -275,62 +241,10 @@ Transcription happens automatically via background jobs:
 
 1. **Job Enqueueing**: When `/v1/surveys/{surveyId}/responses/submit` is called, a transcription job is automatically enqueued using pg-boss
 2. **Job Processing**: Background worker processes the job by:
-   - Calling 3rd party speech-to-text service (e.g., OpenAI Whisper)
+   - Calling 3rd party speech-to-text service (e.g., OpenAI Whisper). For intial implementation let's return a stabbed response.
    - Updating the SurveyResponse record with transcription results
    - Setting `transcriptionStatus` to 'COMPLETED' or 'FAILED'
    - Storing transcript text, confidence, language, and segments
-
-#### Manual Retry (Optional)
-
-**POST /v1/surveys/{surveyId}/responses/{responseId}/transcript**
-Manually trigger or retry transcript generation for a response.
-
-**Response:**
-
-```json
-{
-  "status": "processing",
-  "jobId": "transcription-job-456",
-  "estimatedCompletion": "2024-08-29T15:35:00Z"
-}
-```
-
-#### Job Status Tracking
-
-The transcription status can be monitored via:
-
-- **GET /v1/surveys/{surveyId}/responses/{responseId}**: Check `transcriptionStatus` field
-- **WebSocket /v1/surveys/{surveyId}/live**: Real-time updates when `response_processed` event fires
-
-### 6. Export Functionality
-
-#### GET /v1/surveys/{surveyId}/export
-
-Export survey data in various formats.
-
-**Query Parameters:**
-
-- `format` (string): Export format (csv, pdf, json)
-- `includeAudio` (boolean): Include audio files in export
-- `includeTranscripts` (boolean): Include transcripts
-- `includeInsights` (boolean): Include AI insights
-
-**Response:**
-
-- File download in requested format
-- Or JSON with download URL for large exports
-
-### 7. Real-time Updates (WebSocket)
-
-#### WS /v1/surveys/{surveyId}/live
-
-WebSocket endpoint for real-time survey updates.
-
-**Events:**
-
-- `new_response`: New response submitted
-- `response_processed`: Transcript completed
-- `survey_updated`: Survey metrics or insights changed
 
 ## Data Models
 
@@ -346,10 +260,7 @@ interface Survey {
   visits: number;
   submits: number;
   completionRate: number;
-  lastActivityAt?: Date;
   insightSummary?: string;
-  actionHints?: object[];
-  insightsGeneratedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -406,14 +317,6 @@ Standard HTTP status codes with detailed error messages:
 - Audio files stored in secure object storage (MinIO/S3)
 - Signed URLs for audio access with expiration
 - Input validation and sanitization
-
-## Integration Points
-
-- **Audio Processing**: Integration with speech-to-text service (e.g., OpenAI Whisper)
-- **AI Analysis**: LLM integration for generating insights and summaries
-- **Storage**: MinIO/S3 for audio file storage
-- **Queue System**: pg-boss for async processing jobs
-- **Database**: PostgreSQL with Prisma ORM
 
 ## Monitoring & Analytics
 

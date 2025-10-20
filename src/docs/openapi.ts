@@ -25,6 +25,10 @@ import {
   completeResponseSchema,
   prepareResponseResultSchema,
   responseCompletionSchema,
+  responseListSchema,
+  singleResponseSchema,
+  submitResponseSchema,
+  submitResponseResultSchema,
 } from '@modules/response/schema.js';
 
 extendZodWithOpenApi(z);
@@ -123,6 +127,26 @@ const prepareResponseResultComponent = registry.register(
 const responseCompletionComponent = registry.register(
   'ResponseCompletion',
   responseCompletionSchema.openapi({ title: 'ResponseCompletion' }),
+);
+
+const responseListComponent = registry.register(
+  'ResponseList',
+  responseListSchema.openapi({ title: 'ResponseList' }),
+);
+
+const singleResponseComponent = registry.register(
+  'SingleResponse',
+  singleResponseSchema.openapi({ title: 'SingleResponse' }),
+);
+
+const submitResponseRequestSchema = registry.register(
+  'SubmitResponseRequest',
+  submitResponseSchema.openapi({ title: 'SubmitResponseRequest' }),
+);
+
+const submitResponseResultComponent = registry.register(
+  'SubmitResponseResult',
+  submitResponseResultSchema.openapi({ title: 'SubmitResponseResult' }),
 );
 
 const healthSchema = z
@@ -356,6 +380,87 @@ registry.registerPath({
     200: {
       description: 'Response completed',
       content: jsonContent(responseCompletionComponent),
+    },
+    401: {
+      description: 'Unauthorized',
+      content: jsonContent(errorResponseSchema),
+    },
+    404: {
+      description: 'Not found',
+      content: jsonContent(errorResponseSchema),
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/v1/surveys/{surveyId}/responses',
+  tags: ['Responses'],
+  security: bearerSecurity,
+  request: {
+    params: z.object({ surveyId: z.string().uuid() }).openapi({ title: 'SurveyIdParam' }),
+  },
+  responses: {
+    200: {
+      description: 'List of responses',
+      content: jsonContent(responseListComponent),
+    },
+    401: {
+      description: 'Unauthorized',
+      content: jsonContent(errorResponseSchema),
+    },
+    404: {
+      description: 'Survey not found',
+      content: jsonContent(errorResponseSchema),
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/v1/surveys/{surveyId}/responses/{responseId}',
+  tags: ['Responses'],
+  security: bearerSecurity,
+  request: {
+    params: z
+      .object({
+        surveyId: z.string().uuid(),
+        responseId: z.string().uuid(),
+      })
+      .openapi({ title: 'ResponsePathParams' }),
+  },
+  responses: {
+    200: {
+      description: 'Response details',
+      content: jsonContent(singleResponseComponent),
+    },
+    401: {
+      description: 'Unauthorized',
+      content: jsonContent(errorResponseSchema),
+    },
+    404: {
+      description: 'Not found',
+      content: jsonContent(errorResponseSchema),
+    },
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/v1/surveys/{surveyId}/responses/submit',
+  tags: ['Responses'],
+  security: bearerSecurity,
+  request: {
+    params: z.object({ surveyId: z.string().uuid() }).openapi({ title: 'SurveyIdParam' }),
+    body: {
+      required: true,
+      content: jsonContent(submitResponseRequestSchema),
+    },
+  },
+  responses: {
+    200: {
+      description: 'Response submitted successfully',
+      content: jsonContent(submitResponseResultComponent),
     },
     401: {
       description: 'Unauthorized',

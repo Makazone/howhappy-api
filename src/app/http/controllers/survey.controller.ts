@@ -13,16 +13,27 @@ import type { Survey as PrismaSurvey } from '@prisma/client';
 type ServiceSurveyEntity = PrismaSurvey;
 type SurveyListResult = Awaited<ReturnType<typeof surveyService.list>> & { items: PrismaSurvey[] };
 
-const toSurveyDto = (survey: ServiceSurveyEntity): Survey =>
-  surveySchema.parse({
+const toSurveyDto = (survey: ServiceSurveyEntity): Survey => {
+  const lastActivityAt =
+    'lastActivityAt' in survey && survey.lastActivityAt instanceof Date
+      ? survey.lastActivityAt.toISOString()
+      : undefined;
+
+  return surveySchema.parse({
     id: survey.id,
     ownerId: survey.ownerId,
     title: survey.title,
     prompt: survey.prompt,
     status: survey.status,
+    visits: survey.visits,
+    submits: 'submitsCount' in survey ? survey.submitsCount : survey.submits,
+    completionRate: 'completionRate' in survey ? survey.completionRate : 0,
+    lastActivityAt,
+    insightSummary: survey.insightSummary ?? undefined,
     createdAt: survey.createdAt.toISOString(),
     updatedAt: survey.updatedAt.toISOString(),
   });
+};
 
 const buildListResponse = (result: SurveyListResult) =>
   surveyListResponseSchema.parse({

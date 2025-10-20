@@ -35,14 +35,24 @@ describe('Application Integration Tests', () => {
     // Connect to database first
     await connectDatabase();
 
-    // Apply bootstrap migration
+    // Apply migrations
     const currentDir = dirname(fileURLToPath(import.meta.url));
-    const migrationPath = resolve(
+
+    // Apply bootstrap migration
+    const bootstrapMigrationPath = resolve(
       currentDir,
-      '../../prisma/migrations/20250920095931_bootstrap/migration.sql',
+      '../../prisma/migrations/20250921090508_init/migration.sql',
     );
-    const migrationSql = readFileSync(migrationPath, 'utf-8');
-    await prisma.$executeRawUnsafe(migrationSql);
+    const bootstrapMigrationSql = readFileSync(bootstrapMigrationPath, 'utf-8');
+    await prisma.$executeRawUnsafe(bootstrapMigrationSql);
+
+    // Apply survey metrics migration
+    const metricsMigrationPath = resolve(
+      currentDir,
+      '../../prisma/migrations/20251020120608_add_survey_metrics_and_response_fields/migration.sql',
+    );
+    const metricsMigrationSql = readFileSync(metricsMigrationPath, 'utf-8');
+    await prisma.$executeRawUnsafe(metricsMigrationSql);
 
     await initQueueProducer({ max: 1 });
 
@@ -156,6 +166,92 @@ describe('Application Integration Tests', () => {
       const job = await boss.fetch('transcription.request', { timeout: 5 });
       expect(job?.data).toMatchObject({
         responseId: response.body.response.id,
+        surveyId,
+      });
+      if (job?.id) {
+        await boss.complete(job.id);
+      }
+    });
+
+    it('gets survey with metrics', async () => {
+      const response = await request(app)
+        .get(`/v1/surveys/${surveyId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.survey).toMatchObject({
+        id: surveyId,
+        title: 'Customer Satisfaction',
+        visits: expect.any(Number),
+        submits: expect.any(Number),
+        completionRate: expect.any(Number),
+      });
+      expect(response.body.survey).toHaveProperty('insightSummary');
+      expect(response.body.survey).toHaveProperty('lastActivityAt');
+    });
+
+    it('lists all responses for a survey', async () => {
+      const response = await request(app)
+        .get(`/v1/surveys/${surveyId}/responses`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('responses');
+      expect(Array.isArray(response.body.responses)).toBe(true);
+    });
+
+    it('gets a specific response with details', async () => {
+      // First create a response
+      const createResponse = await request(app)
+        .post(`/v1/surveys/${surveyId}/responses`)
+        .send({ anonymousEmail: 'test@example.com' });
+
+      const responseId = createResponse.body.response.id;
+
+      // Get the response details
+      const response = await request(app)
+        .get(`/v1/surveys/${surveyId}/responses/${responseId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.response).toMatchObject({
+        id: responseId,
+        surveyId,
+        anonymousEmail: 'test@example.com',
+      });
+    });
+
+    it('submits a response with audio URL via submit endpoint', async () => {
+      // Create a response
+      const createResponse = await request(app)
+        .post(`/v1/surveys/${surveyId}/responses`)
+        .send({ anonymousEmail: 'submit-test@example.com' });
+
+      const responseId = createResponse.body.response.id;
+      const responseToken = createResponse.body.responseToken;
+
+      // Submit the response
+      const submitResponse = await request(app)
+        .post(`/v1/surveys/${surveyId}/responses/submit`)
+        .set('Authorization', `Bearer ${responseToken}`)
+        .send({
+          responseId,
+          audioUrl: 'http://example.com/test-audio.webm',
+        });
+
+      expect(submitResponse.status).toBe(200);
+      expect(submitResponse.body.response).toMatchObject({
+        id: responseId,
+        audioUrl: 'http://example.com/test-audio.webm',
+        uploadState: 'COMPLETED',
+      });
+      expect(submitResponse.body).toHaveProperty('jobId');
+
+      // Verify job was enqueued
+      const boss = getQueueProducer();
+      const job = await boss.fetch('transcription.request', { timeout: 5 });
+      expect(job?.data).toMatchObject({
+        responseId,
         surveyId,
       });
       if (job?.id) {

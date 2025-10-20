@@ -29,6 +29,22 @@ export class ResponseRepository {
   async findById(responseId: string): Promise<SurveyResponse | null> {
     return prisma.surveyResponse.findUnique({ where: { id: responseId } });
   }
+
+  async findBySurveyId(surveyId: string): Promise<SurveyResponse[]> {
+    return prisma.surveyResponse.findMany({
+      where: { surveyId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findByIdAndSurvey(responseId: string, surveyId: string): Promise<SurveyResponse | null> {
+    return prisma.surveyResponse.findFirst({
+      where: {
+        id: responseId,
+        surveyId,
+      },
+    });
+  }
 }
 
 export const responseRepository = new ResponseRepository();

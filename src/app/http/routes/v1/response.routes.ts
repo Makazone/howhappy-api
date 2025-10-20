@@ -1,8 +1,22 @@
 import { Router } from 'express';
-import { prepareResponse, completeResponse } from '../../controllers/response.controller.js';
+import {
+  prepareResponse,
+  completeResponse,
+  listResponses,
+  getResponse,
+  submitResponse,
+} from '../../controllers/response.controller.js';
 import { validateBody } from '../../middleware/validation.js';
-import { optionalUser, requireResponseToken } from '../../middleware/authentication.js';
-import { completeResponseSchema, prepareResponseSchema } from '@modules/response/schema.js';
+import {
+  optionalUser,
+  requireResponseToken,
+  requireUser,
+} from '../../middleware/authentication.js';
+import {
+  completeResponseSchema,
+  prepareResponseSchema,
+  submitResponseSchema,
+} from '@modules/response/schema.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -18,6 +32,17 @@ router.patch(
   requireResponseToken(),
   validateBody(completeResponseSchema),
   completeResponse,
+);
+
+router.get('/surveys/:surveyId/responses', requireUser(), listResponses);
+
+router.get('/surveys/:surveyId/responses/:responseId', requireUser(), getResponse);
+
+router.post(
+  '/surveys/:surveyId/responses/submit',
+  requireResponseToken(),
+  validateBody(submitResponseSchema),
+  submitResponse,
 );
 
 export default router;

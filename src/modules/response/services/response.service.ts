@@ -132,6 +132,79 @@ export class ResponseService {
 
     return updated;
   }
+
+  async listBySurvey(surveyId: string, ownerId: string): Promise<SurveyResponse[]> {
+    const survey = await this.surveys.findById(surveyId);
+    if (!survey || survey.ownerId !== ownerId) {
+      throw new NotFoundError('Survey not found');
+    }
+    return this.responses.findBySurveyId(surveyId);
+  }
+
+  async getResponse(
+    surveyId: string,
+    responseId: string,
+    ownerId: string,
+  ): Promise<SurveyResponse> {
+    const survey = await this.surveys.findById(surveyId);
+    if (!survey || survey.ownerId !== ownerId) {
+      throw new NotFoundError('Survey not found');
+    }
+
+    const response = await this.responses.findByIdAndSurvey(responseId, surveyId);
+    if (!response) {
+      throw new NotFoundError('Response not found');
+    }
+
+    return response;
+  }
+
+  async submit(options: {
+    surveyId: string;
+    responseId: string;
+    audioUrl: string;
+    token: ResponseTokenPayload;
+  }): Promise<{ response: SurveyResponse; jobId?: string }> {
+    const response = await this.responses.findById(options.responseId);
+    if (!response || response.surveyId !== options.surveyId) {
+      throw new NotFoundError('Response not found');
+    }
+
+    // if (response.uploadState === UploadState.COMPLETED) {
+    //   return { response };
+    // }
+
+    if (
+      options.token.responseId !== options.responseId ||
+      options.token.surveyId !== options.surveyId
+    ) {
+      throw new ForbiddenError('Response token mismatch');
+    }
+
+    const updateData: Prisma.SurveyResponseUpdateInput = {
+      audioUrl: options.audioUrl,
+      uploadState: UploadState.COMPLETED,
+    };
+
+    const updated = await this.responses.update(options.responseId, updateData);
+
+    let jobId: string | null;
+    try {
+      const boss = getQueueProducer();
+      jobId = await boss.send(
+        'transcription.request',
+        {
+          responseId: updated.id,
+          surveyId: updated.surveyId,
+        },
+        { retryLimit: 0 },
+      );
+    } catch {
+      throw new AppError('Failed to enqueue transcription job', 500);
+    }
+
+    return { response: updated, jobId: jobId ?? undefined };
+  }
 }
 
 export const responseService = new ResponseService();

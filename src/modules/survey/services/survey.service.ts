@@ -26,11 +26,18 @@ export class SurveyService {
   }
 
   async get(ownerId: string, surveyId: string) {
-    const survey = await this.repository.findById(surveyId);
+    const survey = await this.repository.findByIdWithMetrics(surveyId);
     if (!survey || survey.ownerId !== ownerId) {
       throw new NotFoundError('Survey not found');
     }
-    return survey;
+
+    // Calculate completion rate
+    const completionRate = survey.visits > 0 ? survey.submitsCount / survey.visits : 0;
+
+    return {
+      ...survey,
+      completionRate,
+    };
   }
 
   async create(ownerId: string, input: CreateSurveyInput) {

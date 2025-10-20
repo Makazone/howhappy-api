@@ -37,3 +37,7 @@ Use this document to get up to speed before working in this repository.
 
 - Summaries should cite relevant file paths/sections (e.g., `src/modules/survey/services/survey.service.ts:8`).
 - Note any updates to key docs so the next agent can review changes quickly.
+
+## Working with database
+
+Database changes should be made in the `prisma/schema.prisma` file. After that a migration should be created by running `pnpm run prisma migrate dev`. Raw migration files are stored in the `prisma/migrations` directory and should never be manually edited or created.

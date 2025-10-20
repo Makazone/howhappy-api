@@ -36,7 +36,46 @@ export class SurveyRepository {
   }
 
   async findById(id: string): Promise<Survey | null> {
-    return prisma.survey.findUnique({ where: { id } });
+    return prisma.survey.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            responses: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findByIdWithMetrics(id: string) {
+    const survey = await prisma.survey.findUnique({
+      where: { id },
+      include: {
+        responses: {
+          select: {
+            uploadState: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!survey) {
+      return null;
+    }
+
+    const completedResponses = survey.responses.filter((r) => r.uploadState === 'COMPLETED');
+    const lastActivity = survey.responses[0]?.createdAt || survey.updatedAt;
+
+    return {
+      ...survey,
+      submitsCount: completedResponses.length,
+      lastActivityAt: lastActivity,
+    };
   }
 
   async create(ownerId: string, data: { title: string; prompt: string }): Promise<Survey> {
