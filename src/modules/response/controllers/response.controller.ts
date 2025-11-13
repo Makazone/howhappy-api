@@ -1,5 +1,5 @@
 import type { Request, Response, RequestHandler } from 'express';
-import { asyncHandler } from '../middleware/async-handler.js';
+import { asyncHandler } from '@app/http/middleware/async-handler.js';
 import { responseService } from '@modules/response/services/response.service.js';
 import {
   surveyResponseSchema,
@@ -8,14 +8,16 @@ import {
   responseListSchema,
   singleResponseSchema,
   submitResponseResultSchema,
+  basicSurveySchema,
   type SurveyResponse,
   type PrepareResponseResult,
   type ResponseCompletion,
   type ResponseList,
   type SingleResponse,
   type SubmitResponseResult,
-} from '@modules/response/schema.js';
-import type { SurveyResponse as PrismaSurveyResponse } from '@prisma/client';
+  type BasicSurvey,
+} from '../validators/response.validators.js';
+import type { Survey, SurveyResponse as PrismaSurveyResponse } from '@prisma/client';
 
 type PrepareResult = Awaited<ReturnType<typeof responseService.prepare>>;
 
@@ -42,11 +44,20 @@ const toSurveyResponseDto = (response: ServiceResponseEntity): SurveyResponse =>
     updatedAt: response.updatedAt.toISOString(),
   });
 
+const toBasicSurveyDto = (survey: Survey): BasicSurvey =>
+  basicSurveySchema.parse({
+    id: survey.id,
+    title: survey.title,
+    prompt: survey.prompt,
+    status: survey.status,
+  });
+
 const buildPrepareResult = (result: PrepareResult): PrepareResponseResult =>
   prepareResponseResultSchema.parse({
     response: toSurveyResponseDto(result.response),
     uploadUrl: result.uploadUrl,
     responseToken: result.responseToken,
+    survey: toBasicSurveyDto(result.survey),
   });
 
 const buildCompletionResult = (response: ServiceResponseEntity): ResponseCompletion =>

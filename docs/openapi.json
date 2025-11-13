@@ -742,12 +742,42 @@
           },
           "responseToken": {
             "type": "string"
+          },
+          "survey": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "title": {
+                "type": "string"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "ACTIVE",
+                  "CLOSED"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "prompt",
+              "status"
+            ]
           }
         },
         "required": [
           "response",
           "uploadUrl",
-          "responseToken"
+          "responseToken",
+          "survey"
         ],
         "title": "PrepareResponseResult"
       },

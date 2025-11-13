@@ -12,6 +12,13 @@ export const uploadStateEnum = z.enum(['PREPARED', 'UPLOADING', 'COMPLETED', 'FA
 
 export const jobStatusEnum = z.enum(['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED']);
 
+export const basicSurveySchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  prompt: z.string(),
+  status: z.enum(['DRAFT', 'ACTIVE', 'CLOSED']),
+});
+
 export const surveyResponseSchema = z.object({
   id: z.string().uuid(),
   surveyId: z.string().uuid(),
@@ -36,6 +43,7 @@ export const prepareResponseResultSchema = z.object({
   response: surveyResponseSchema,
   uploadUrl: z.string().url(),
   responseToken: z.string(),
+  survey: basicSurveySchema,
 });
 
 export const responseCompletionSchema = z.object({
@@ -62,6 +70,7 @@ export const submitResponseResultSchema = z.object({
 
 export type PrepareResponseInput = z.infer<typeof prepareResponseSchema>;
 export type CompleteResponseInput = z.infer<typeof completeResponseSchema>;
+export type BasicSurvey = z.infer<typeof basicSurveySchema>;
 export type SurveyResponse = z.infer<typeof surveyResponseSchema>;
 export type PrepareResponseResult = z.infer<typeof prepareResponseResultSchema>;
 export type ResponseCompletion = z.infer<typeof responseCompletionSchema>;

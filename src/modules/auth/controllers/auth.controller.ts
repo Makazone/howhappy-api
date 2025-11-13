@@ -1,5 +1,5 @@
 import type { RequestHandler, Request, Response } from 'express';
-import { asyncHandler } from '../middleware/async-handler.js';
+import { asyncHandler } from '@app/http/middleware/async-handler.js';
 import { authService } from '@modules/auth/services/auth.service.js';
 import {
   authTokenResponseSchema,
@@ -8,7 +8,7 @@ import {
   type AuthTokenResponse,
   type MeResponse,
   type UserPublic,
-} from '@modules/auth/schema.js';
+} from '@modules/auth/validators/auth.validators.js';
 
 const toPublicUser = (user: Awaited<ReturnType<typeof authService.getProfile>>): UserPublic =>
   userPublicSchema.parse({

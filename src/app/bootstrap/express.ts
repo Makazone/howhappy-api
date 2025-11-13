@@ -1,4 +1,5 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { logger } from '@shared/logging/logger.js';
 import type { Logger } from 'pino';
@@ -6,6 +7,7 @@ import routes from '@app/http/routes/index.js';
 import { AppError } from '@shared/errors/app-error.js';
 import crypto from 'node:crypto';
 import openApiDocument from '@docs/openapi.js';
+import { getEnv } from '@shared/config/env.js';
 
 declare global {
   namespace Express {
@@ -26,6 +28,29 @@ export function createExpressApp(options: ExpressBootstrapOptions = {}): Express
 
   if (options.trustProxy) {
     app.set('trust proxy', true);
+  }
+
+  // Configure CORS
+  const env = getEnv();
+  const allowedOrigins = env.CORS_ALLOWED_ORIGINS;
+
+  if (allowedOrigins === '*') {
+    // Allow all origins in development
+    app.use(
+      cors({
+        origin: true,
+        credentials: true,
+      }),
+    );
+  } else {
+    // Allow specific origins (comma-separated)
+    const origins = allowedOrigins.split(',').map((origin) => origin.trim());
+    app.use(
+      cors({
+        origin: origins,
+        credentials: true,
+      }),
+    );
   }
 
   app.use(express.json({ limit: options.bodyLimit || '10mb' }));

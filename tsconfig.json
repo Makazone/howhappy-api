@@ -27,7 +27,8 @@
       "@modules/*": ["modules/*"],
       "@infrastructure/*": ["infrastructure/*"],
       "@app/*": ["app/*"],
-      "@docs/*": ["docs/*"]
+      "@docs/*": ["docs/*"],
+      "@worker/*": ["worker/*"]
     }
   },
   "include": ["src/**/*"],

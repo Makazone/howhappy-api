@@ -28,6 +28,7 @@ export default defineConfig({
       '@modules': path.resolve(__dirname, './src/modules'),
       '@infrastructure': path.resolve(__dirname, './src/infrastructure'),
       '@app': path.resolve(__dirname, './src/app'),
+      '@docs': path.resolve(__dirname, './src/docs'),
     },
   },
 });

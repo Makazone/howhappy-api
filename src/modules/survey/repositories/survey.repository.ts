@@ -1,6 +1,6 @@
 import { prisma } from '@infrastructure/database/client.js';
 import type { Prisma, Survey } from '@prisma/client';
-import type { ListSurveyQuery, UpdateSurveyInput } from '../schema.js';
+import type { ListSurveyQuery, UpdateSurveyInput } from '../validators/survey.validators.js';
 
 export interface SurveyListResult {
   items: Survey[];

@@ -1,13 +1,13 @@
 import type { Request, Response, RequestHandler } from 'express';
-import { asyncHandler } from '../middleware/async-handler.js';
-import { surveyService } from '@modules/survey/services/survey.service.js';
+import { asyncHandler } from '@app/http/middleware/async-handler.js';
+import { surveyService } from '../services/survey.service.js';
 import {
   surveyListResponseSchema,
   surveyCreatedResponseSchema,
   surveyUpdateResponseSchema,
   surveySchema,
   type Survey,
-} from '@modules/survey/schema.js';
+} from '../validators/survey.validators.js';
 import type { Survey as PrismaSurvey } from '@prisma/client';
 
 type ServiceSurveyEntity = PrismaSurvey;

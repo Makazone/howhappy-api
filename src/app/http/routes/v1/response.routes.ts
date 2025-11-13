@@ -5,18 +5,18 @@ import {
   listResponses,
   getResponse,
   submitResponse,
-} from '../../controllers/response.controller.js';
+} from '@modules/response/controllers/response.controller.js';
 import { validateBody } from '../../middleware/validation.js';
 import {
   optionalUser,
   requireResponseToken,
   requireUser,
-} from '../../middleware/authentication.js';
+} from '@modules/auth/middleware/authentication.js';
 import {
   completeResponseSchema,
   prepareResponseSchema,
   submitResponseSchema,
-} from '@modules/response/schema.js';
+} from '@modules/response/validators/response.validators.js';
 
 const router: Router = Router({ mergeParams: true });
 

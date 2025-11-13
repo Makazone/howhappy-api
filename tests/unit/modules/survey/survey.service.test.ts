@@ -18,6 +18,19 @@ class MockSurveyRepository {
     return this.surveys.get(id) ?? null;
   }
 
+  async findByIdWithMetrics(id: string) {
+    const survey = this.surveys.get(id);
+    if (!survey) {
+      return null;
+    }
+    return {
+      ...survey,
+      submitsCount: 0,
+      visits: 0,
+      lastActivityAt: survey.updatedAt,
+    };
+  }
+
   async create(ownerId: string, data: { title: string; prompt: string }) {
     const survey = {
       id: 'survey-id',

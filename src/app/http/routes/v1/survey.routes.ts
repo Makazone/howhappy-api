@@ -4,14 +4,14 @@ import {
   getSurvey,
   createSurvey,
   updateSurvey,
-} from '../../controllers/survey.controller.js';
+} from '@modules/survey/controllers/survey.controller.js';
 import { validateBody, validateQuery } from '../../middleware/validation.js';
-import { requireUser } from '../../middleware/authentication.js';
+import { requireUser } from '@modules/auth/middleware/authentication.js';
 import {
   createSurveySchema,
   listSurveyQuerySchema,
   updateSurveySchema,
-} from '@modules/survey/schema.js';
+} from '@modules/survey/validators/survey.validators.js';
 
 const router: Router = Router();
 

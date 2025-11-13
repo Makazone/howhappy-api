@@ -2,8 +2,8 @@ import { getQueueProducer } from '@infrastructure/queue/producer.js';
 import { getMinIOClient } from '@infrastructure/storage/minio-client.js';
 import { AppError, ForbiddenError, NotFoundError } from '@shared/errors/app-error.js';
 import { signResponseToken, type ResponseTokenPayload } from '@shared/security/jwt.js';
-import type { Prisma, SurveyResponse } from '@prisma/client';
-import { UploadState } from '@prisma/client';
+import type { Prisma, Survey, SurveyResponse } from '@prisma/client';
+import { SurveyStatus, UploadState } from '@prisma/client';
 import { responseRepository, ResponseRepository } from '../repositories/response.repository.js';
 import {
   surveyRepository,
@@ -14,7 +14,7 @@ import {
   prepareResponseSchema,
   type CompleteResponseInput,
   type PrepareResponseInput,
-} from '../schema.js';
+} from '../validators/response.validators.js';
 
 export interface PrepareOptions {
   surveyId: string;
@@ -60,11 +60,16 @@ export class ResponseService {
     response: SurveyResponse;
     uploadUrl: string;
     responseToken: string;
+    survey: Survey;
   }> {
     const payload = prepareResponseSchema.parse(options.payload ?? {});
 
     const survey = await this.surveys.findById(options.surveyId);
     if (!survey) {
+      throw new NotFoundError('Survey not found');
+    }
+
+    if (survey.status !== SurveyStatus.ACTIVE) {
       throw new NotFoundError('Survey not found');
     }
 
@@ -90,6 +95,7 @@ export class ResponseService {
       response,
       uploadUrl,
       responseToken: token,
+      survey,
     };
   }
 
@@ -170,9 +176,9 @@ export class ResponseService {
       throw new NotFoundError('Response not found');
     }
 
-    // if (response.uploadState === UploadState.COMPLETED) {
-    //   return { response };
-    // }
+    if (response.uploadState === UploadState.COMPLETED) {
+      return { response };
+    }
 
     if (
       options.token.responseId !== options.responseId ||

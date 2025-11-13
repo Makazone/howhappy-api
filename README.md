@@ -18,9 +18,42 @@ Survey collection system with audio transcription and analysis.
 
 2. Configure environment variables
 
+   Create a `.env` file with the following required variables:
+
    ```bash
-   cp .env.example .env
-   # Edit .env with your secrets (Postgres, JWT, MinIO)
+   # Environment
+   NODE_ENV=development
+   PORT=3000
+
+   # Database
+   DATABASE_URL=postgresql://user:password@localhost:5432/howhappy
+
+   # JWT Authentication
+   JWT_SECRET=your-secret-key-minimum-32-characters-long
+
+   # Logging
+   LOG_LEVEL=info
+
+   # CORS Configuration
+   # Use '*' to allow all origins (development only), or comma-separated list
+   # Example: http://localhost:8080,https://app.howhappy.com
+   CORS_ALLOWED_ORIGINS=*
+
+   # MinIO Object Storage
+   MINIO_ENDPOINT=http://localhost:9000
+   MINIO_USE_SSL=false
+   MINIO_ACCESS_KEY=minioadmin
+   MINIO_SECRET_KEY=minioadmin
+   MINIO_BUCKET_NAME=howhappy
+
+   # Worker Configuration
+   WORKER_CONCURRENCY=5
+   JOB_RETENTION_DAYS=7
+
+   # External API Configuration (optional)
+   # ELEVENLABS_API_KEY=
+   # LLM_API_KEY=
+   # LLM_MODEL=gpt-4
    ```
 
 3. Generate Prisma client and apply migrations

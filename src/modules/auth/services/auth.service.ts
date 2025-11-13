@@ -6,7 +6,7 @@ import {
   registerInputSchema,
   type LoginInput,
   type RegisterInput,
-} from '../schema.js';
+} from '../validators/auth.validators.js';
 import { AppError, ConflictError, UnauthorizedError } from '@shared/errors/app-error.js';
 import { signUserAccessToken } from '@shared/security/jwt.js';
 

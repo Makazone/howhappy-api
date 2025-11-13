@@ -6,7 +6,7 @@ import {
   type ListSurveyQuery,
   updateSurveySchema,
   type UpdateSurveyInput,
-} from '../schema.js';
+} from '../validators/survey.validators.js';
 import { surveyRepository, SurveyRepository } from '../repositories/survey.repository.js';
 
 export interface SurveyServiceDeps {

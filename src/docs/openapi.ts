@@ -10,7 +10,7 @@ import {
   authTokenResponseSchema,
   meResponseSchema,
   userPublicSchema,
-} from '@modules/auth/schema.js';
+} from '@modules/auth/validators/auth.validators.js';
 import {
   createSurveySchema,
   updateSurveySchema,
@@ -19,7 +19,7 @@ import {
   surveyCreatedResponseSchema,
   surveyUpdateResponseSchema,
   singleSurveyResponseSchema,
-} from '@modules/survey/schema.js';
+} from '@modules/survey/validators/survey.validators.js';
 import {
   prepareResponseSchema,
   completeResponseSchema,
@@ -29,7 +29,7 @@ import {
   singleResponseSchema,
   submitResponseSchema,
   submitResponseResultSchema,
-} from '@modules/response/schema.js';
+} from '@modules/response/validators/response.validators.js';
 
 extendZodWithOpenApi(z);
 

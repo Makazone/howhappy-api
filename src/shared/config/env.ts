@@ -7,6 +7,9 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32),
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
 
+  // CORS Configuration
+  CORS_ALLOWED_ORIGINS: z.string().default('*'),
+
   // MinIO Configuration
   MINIO_ENDPOINT: z.string().default('http://localhost:9000'),
   MINIO_USE_SSL: z.coerce.boolean().default(false),
